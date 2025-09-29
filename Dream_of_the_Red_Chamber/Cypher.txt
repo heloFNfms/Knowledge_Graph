@@ -1,0 +1,159 @@
+// 红楼梦人物关系图 Cypher 代码
+// 用于 Neo4j 图数据库
+
+// 1. 创建约束（确保人物名称唯一）
+CREATE CONSTRAINT person_name IF NOT EXISTS FOR (p:Person) REQUIRE p.name IS UNIQUE;
+
+// 2. 创建所有人物节点
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+MERGE (head:Person {name: row.head})
+MERGE (tail:Person {name: row.tail});
+
+// 3. 创建关系
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+CALL apoc.create.relationship(head, row.relation, {label: row.label}, tail) YIELD rel
+RETURN count(rel);
+
+// 如果不使用 APOC 插件，可以使用以下方式为每种关系类型创建：
+
+// 子女关系
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'son'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:SON {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'daughter'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:DAUGHTER {label: row.label}]->(tail);
+
+// 配偶关系
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'wife'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:WIFE {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'husband'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:HUSBAND {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'concubine'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:CONCUBINE {label: row.label}]->(tail);
+
+// 兄弟姐妹关系
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'elder_brother'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:ELDER_BROTHER {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'younger_brother'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:YOUNGER_BROTHER {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'younger_sister'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:YOUNGER_SISTER {label: row.label}]->(tail);
+
+// 父母关系
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'father'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:FATHER {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'mother'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:MOTHER {label: row.label}]->(tail);
+
+// 祖辈关系
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'grandfather'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:GRANDFATHER {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'grandson'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:GRANDSON {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'great_great_grandson'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:GREAT_GREAT_GRANDSON {label: row.label}]->(tail);
+
+// 仆人关系
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'servant'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:SERVANT {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'servant_girl'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:SERVANT_GIRL {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'nurser'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:NURSER {label: row.label}]->(tail);
+
+// 其他关系类型
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation = 'friend'
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:FRIEND {label: row.label}]->(tail);
+
+LOAD CSV WITH HEADERS FROM 'file:///hongloumeng_relations.csv' AS row
+WITH row WHERE row.relation IN ['girl_friend', 'boy_friend']
+MATCH (head:Person {name: row.head})
+MATCH (tail:Person {name: row.tail})
+MERGE (head)-[:LOVER {label: row.label}]->(tail);
+
+// 查询示例
+
+// 1. 查看所有人物
+MATCH (p:Person) RETURN p.name LIMIT 50;
+
+// 2. 查看贾宝玉的所有关系
+MATCH (p:Person {name: '贾宝玉'})-[r]-(other)
+RETURN p.name, type(r), r.label, other.name;
+
+// 3. 查找贾府核心人物的家族树
+MATCH path = (p:Person {name: '贾母'})-[*1..3]-(other)
+WHERE type(relationships(path)[0]) IN ['SON', 'DAUGHTER', 'GRANDSON', 'WIFE', 'HUSBAND']
+RETURN path LIMIT 100;
+
+// 4. 查找所有丫鬟
+MATCH (p:Person)-[:SERVANT_GIRL]->(master)
+RETURN p.name AS 丫鬟, master.name AS 主人;
+
+// 5. 查找最复杂的人物关系（度最高的节点）
+MATCH (p:Person)
+WITH p, size((p)--()) AS degree
+ORDER BY degree DESC
+LIMIT 10
+RETURN p.name AS 人物, degree AS 关系数量;

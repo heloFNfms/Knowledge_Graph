@@ -1,0 +1,17 @@
+// 创建角色节点
+CREATE (neo:Person {name: "Neo", age: 29})
+CREATE (morpheus:Person {name: "Morpheus", occupation: "Total badass", rank: "Captain"})
+CREATE (trinity:Person {name: "Trinity"})
+CREATE (cypher:Person {name: "Cypher", last_name: "Reagan"})
+CREATE (smith:Person {name: "Agent Smith", language: "C++", version: "1.0b"})
+CREATE (architect:Person {name: "The Architect"})
+
+// 创建关系
+CREATE (neo)-[:KNOWS {age: "32 years"}]->(morpheus)
+CREATE (neo)-[:LOVES]->(trinity)
+CREATE (morpheus)-[:KNOWS {disclosure: "public"}]->(trinity)
+CREATE (morpheus)-[:KNOWS {age: "6 months", disclosure: "secret"}]->(cypher)
+CREATE (cypher)-[:KNOWS]->(smith)
+CREATE (smith)-[:CODED_BY]->(architect)
+
+RETURN *
